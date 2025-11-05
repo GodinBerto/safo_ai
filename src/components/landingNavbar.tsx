@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import AuthPopup from "./authPopup";
 
@@ -64,7 +63,7 @@ export default function LandingNavbar({ logo = "SAFOAI" }: { logo?: string }) {
             </div>
 
             {/* Right: Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => {
                   setShowLogin(!showLogin);
@@ -84,14 +83,14 @@ export default function LandingNavbar({ logo = "SAFOAI" }: { logo?: string }) {
               </button>
 
               {/* Mobile menu button */}
-              <button
+              {/* <button
                 onClick={() => setOpen((s) => !s)}
                 aria-controls="mobile-menu"
                 aria-expanded={open}
                 className="ml-2 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white/4 text-white/90 hover:bg-white/6 md:hidden"
               >
                 {open ? <X size={18} /> : <Menu size={18} />}
-              </button>
+              </button> */}
             </div>
 
             {/* Mobile menu (floating under navbar) */}
