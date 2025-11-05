@@ -2,12 +2,14 @@
 
 import { X, Mail, Github, Chrome } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface AuthPopupProps {
   onClose: () => void;
 }
 
 export default function AuthPopup({ onClose }: AuthPopupProps) {
+  const router = useRouter();
   return (
     <div
       onClick={onClose}
@@ -46,10 +48,20 @@ export default function AuthPopup({ onClose }: AuthPopupProps) {
 
         {/* Social Buttons */}
         <div className="space-y-3">
-          <button className="w-full bg-neutral-800 hover:bg-neutral-700 border border-white/10 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+          <button
+            onClick={() => {
+              router.push("/dashboard");
+            }}
+            className="w-full bg-neutral-800 hover:bg-neutral-700 border border-white/10 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all"
+          >
             <Chrome size={18} /> Continue with Google
           </button>
-          <button className="w-full bg-neutral-800 hover:bg-neutral-700 border border-white/10 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+          <button
+            onClick={() => {
+              router.push("/dashboard");
+            }}
+            className="w-full bg-neutral-800 hover:bg-neutral-700 border border-white/10 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all"
+          >
             <Github size={18} /> Continue with GitHub
           </button>
         </div>
