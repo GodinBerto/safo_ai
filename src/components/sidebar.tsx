@@ -45,12 +45,12 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <div className="p-4 border-t border-stone-800">
+      <div className="p-4 border-t border-stone-800 z-10">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="relative w-full max-w-sm bg-linear-to-r from-[#0a0a0a] to-[#121212] border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-lg overflow-hidden"
+          className="relative w-full max-w-sm bg-linear-to-r from-[#0a0a0a] to-[#121212] border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-lg overflow-hidden  z-10"
         >
           {/* Background Sparkles */}
           <div className="absolute inset-0">
@@ -69,7 +69,7 @@ export default function Sidebar() {
           </div>
 
           {/* Button */}
-          <button className="relative z-10 px-4 py-1.5 bg-white text-black rounded-full shadow-sm hover:bg-gray-200 transition-all duration-200">
+          <button className="relative px-4 py-1.5 bg-white text-black rounded-full shadow-sm hover:bg-gray-200 transition-all duration-200">
             Upgrade
           </button>
         </motion.div>

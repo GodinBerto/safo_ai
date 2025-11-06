@@ -13,7 +13,7 @@ import Image from "next/image";
 
 export default function SettingsDropdown() {
   return (
-    <div className="w-72 bg-black rounded-2xl shadow-lg border border-stone-800 overflow-hidden">
+    <div className="w-72 bg-black rounded-2xl shadow-lg border border-stone-800 overflow-hidden z-50 relative">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-stone-900">
         <div className="flex items-center gap-3">

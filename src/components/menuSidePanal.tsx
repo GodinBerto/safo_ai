@@ -26,7 +26,7 @@ export default function MenuSidePanal() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   return (
-    <div className="w-22 py-5 flex flex-col justify-between border-r border-stone-800">
+    <div className="w-22 py-5 flex flex-col justify-between border-r border-stone-600/10 bg-stone-300/10 backdrop-blur-xl">
       <div className="flex flex-col gap-6 items-center">
         <Image
           alt=""
@@ -35,6 +35,7 @@ export default function MenuSidePanal() {
           height={1000}
           className="rounded-full w-[50px] h-[50px]"
         />
+
         <div className="flex flex-col gap-6 items-center mt-10">
           <Bot
             size={40}
@@ -62,6 +63,7 @@ export default function MenuSidePanal() {
           />
         </div>
       </div>
+
       <div className="flex flex-col gap-6 items-center mt-10 relative">
         <Settings
           size={40}
@@ -69,6 +71,7 @@ export default function MenuSidePanal() {
           className="bg-black/40 backdrop-blur-md text-white border border-white/10 p-2 rounded-lg shadow-md shadow-white/30 hover:shadow-white transition-all duration-200 ease-in-out"
         />
       </div>
+
       {/* Dropdown */}
       {open && (
         <div className="absolute left-[70px] bottom-10 animate-in fade-in slide-in-from-left-2 duration-150 z-50">
