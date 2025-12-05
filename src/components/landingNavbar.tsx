@@ -22,7 +22,7 @@ export default function LandingNavbar({ logo = "SAFOAI" }: { logo?: string }) {
   return (
     <>
       <header
-        className={`fixed z-50 transition-colors duration-300 flex justify-center w-screen ${
+        className={`fixed z-50 transition-colors duration-300 flex justify-center w-screen mt-5 ${
           scrolled ? "" : ""
         }`}
         aria-label="Primary"
@@ -33,9 +33,11 @@ export default function LandingNavbar({ logo = "SAFOAI" }: { logo?: string }) {
           aria-label="Main navigation"
         >
           <div
-            className={`relative flex h-16 items-center justify-between rounded-2xl p-3
+            className={`relative flex h-16 items-center justify-between rounded-full p-3
             
-             duration-300 ${scrolled ? "shadow-lg/10" : ""}`}
+             duration-300 ${
+               scrolled ? "shadow-lg/10 bg-stone-300/10 backdrop-blur-xl" : ""
+             }`}
             style={{
               boxShadow: scrolled ? "0 8px 30px rgba(2,6,23,0.55)" : "",
             }}

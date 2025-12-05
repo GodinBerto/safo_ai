@@ -2,7 +2,7 @@ import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="h-20 flex items-center">
+    <footer className="h-20 flex items-center absolute bottom-0 w-full">
       <div className="container mx-auto px-4 py-6 flex justify-between items-center text-sm text-white/70">
         {/* Left: Logo and name */}
         <div className="flex items-center gap-2"></div>
