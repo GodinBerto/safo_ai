@@ -5,11 +5,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import AuthPopup from "./authPopup";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function LandingNavbar({ logo = "SAFOAI" }: { logo?: string }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const pathname = usePathname();
+  const [isWaitlist, setIsWaitlist] = useState(false);
 
   // Add small shadow after scrolling
   useEffect(() => {
@@ -18,6 +21,10 @@ export default function LandingNavbar({ logo = "SAFOAI" }: { logo?: string }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    setIsWaitlist(pathname === "/waitlist");
+  }, [pathname]);
 
   return (
     <>
@@ -65,37 +72,38 @@ export default function LandingNavbar({ logo = "SAFOAI" }: { logo?: string }) {
             </div>
 
             {/* Right: Actions */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  setShowLogin(!showLogin);
-                }}
-                className="flex items-center gap-2 border border-white/20 text-white hover:text-white hover:border-white/30 text-sm px-4 py-2 rounded-full transition-all duration-200 cursor-pointer"
-              >
-                Sign in
-              </button>
+            <div>
+              {!isWaitlist ? (
+                <div>
+                  <Link href={"#join-waitlist"}>
+                    <button className="rounded-full bg-white hover:bg-white/80 text-black text-sm py-2 px-5 transition cursor-pointer">
+                      Join Waitlist
+                    </button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setShowLogin(!showLogin);
+                    }}
+                    className="flex items-center gap-2 border border-white/20 text-white hover:text-white hover:border-white/30 text-sm px-4 py-2 rounded-full transition-all duration-200 cursor-pointer"
+                  >
+                    Sign in
+                  </button>
 
-              <button
-                onClick={() => {
-                  setShowLogin(!showLogin);
-                }}
-                className="rounded-full bg-white hover:bg-white/80 text-black text-sm py-2 px-5 transition cursor-pointer"
-              >
-                Sign up
-              </button>
-
-              {/* Mobile menu button */}
-              {/* <button
-                onClick={() => setOpen((s) => !s)}
-                aria-controls="mobile-menu"
-                aria-expanded={open}
-                className="ml-2 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white/4 text-white/90 hover:bg-white/6 md:hidden"
-              >
-                {open ? <X size={18} /> : <Menu size={18} />}
-              </button> */}
+                  <button
+                    onClick={() => {
+                      setShowLogin(!showLogin);
+                    }}
+                    className="rounded-full bg-white hover:bg-white/80 text-black text-sm py-2 px-5 transition cursor-pointer"
+                  >
+                    Sign up
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Mobile menu (floating under navbar) */}
             <div
               id="mobile-menu"
               className={`absolute left-0 right-0 top-full mt-2 md:hidden ${

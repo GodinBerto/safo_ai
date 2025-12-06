@@ -1,11 +1,15 @@
 "use client";
+import { JoinWaitlist, GetWaitlistCount } from "@/api/join_waitlist";
 import ColorBends from "@/components/ColorBends";
 import Footer from "@/components/footer";
 import LandingNavbar from "@/components/landingNavbar";
+import Toast from "@/components/ui/toast";
+import { em } from "framer-motion/client";
 import {
   BarChart2,
   BookOpen,
   Brain,
+  CheckCircle,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -14,8 +18,10 @@ import {
   Lightbulb,
   Play,
   Users,
+  X,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 interface FaqItem {
   question: string;
@@ -117,6 +123,10 @@ const caseStudies = [
 export default function JoinWaitlistPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(0);
+  const [email, setEmail] = useState("");
+  const [refresh, setRefresh] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handlePlay = () => {
     if (videoRef.current) {
@@ -137,9 +147,130 @@ export default function JoinWaitlistPage() {
 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
+  const [toastState, setToastState] = useState<{
+    open: boolean;
+    title?: string;
+    message: string;
+    variant?: "success" | "error" | "info";
+  }>({ open: false, title: "", message: "", variant: "info" });
+
+  const showToast = (opts: {
+    title?: string;
+    message: string;
+    variant?: "success" | "error" | "info";
+  }) => {
+    setToastState({
+      open: true,
+      title: opts.title,
+      message: opts.message,
+      variant: opts.variant ?? "info",
+    });
+  };
+
+  const closeToast = () => setToastState((s) => ({ ...s, open: false }));
+
   const toggleIndex = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+
+  const verifyEmail = async (email: string) => {
+    const apiKey = "52e7c000ca394457980a5c6e3c24ea00";
+    const response = await fetch(
+      `https://emailvalidation.abstractapi.com/v1/?api_key=${apiKey}&email=${email}`
+    );
+    const data = await response.json();
+    return data.is_valid_format.value && data.is_smtp_valid.value;
+  };
+
+  const joinWaitlist = async (email: string) => {
+    setLoading(true);
+    try {
+      if (!email.trim()) {
+        showToast({
+          title: "Error",
+          message: "Please enter an email address.",
+          variant: "error",
+        });
+        setLoading(false);
+        return;
+      }
+
+      const isRealEmail = await verifyEmail(email);
+      if (!isRealEmail) {
+        showToast({
+          title: "Error",
+          message: "Email does not exist.",
+          variant: "error",
+        });
+        setLoading(false);
+        return;
+      }
+
+      const response = await JoinWaitlist(email);
+      console.log("Status:", response.status);
+
+      if (response.status === 409) {
+        showToast({
+          title: "Info",
+          message: "You have already joined the waitlist.",
+          variant: "info",
+        });
+        setLoading(false);
+        return;
+      }
+
+      if (!response.ok) {
+        showToast({
+          title: "Error",
+          message: "Something went wrong.",
+          variant: "error",
+        });
+        setLoading(false);
+        return;
+      }
+
+      showToast({
+        title: "Joined",
+        message: "You joined the waitlist!",
+        variant: "success",
+      });
+
+      setEmail("");
+      setRefresh(!refresh);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error joining waitlist:", error);
+      showToast({
+        title: "Error",
+        message: "Failed to join waitlist.",
+        variant: "error",
+      });
+      setLoading(false);
+    }
+  };
+
+  const getWaitlistCount = async () => {
+    try {
+      const count = await GetWaitlistCount();
+      showToast({
+        title: "Waitlist Count",
+        message: `${count ?? 0} people joined`,
+        variant: "info",
+      });
+      setWaitlistCount(count);
+    } catch (error) {
+      console.error("Error fetching waitlist count:", error);
+      showToast({
+        title: "Error",
+        message: "Failed to fetch waitlist count.",
+        variant: "error",
+      });
+    }
+  };
+
+  useEffect(() => {
+    getWaitlistCount();
+  }, [refresh]);
 
   return (
     <div className="min-h-screen relative">
@@ -155,7 +286,10 @@ export default function JoinWaitlistPage() {
       <LandingNavbar />
 
       {/* Content */}
-      <section className="relative w-full min-h-screen md:min-h-[calc(100vh-300px)] flex items-center justify-center overflow-hidden">
+      <section
+        className="relative w-full min-h-screen md:min-h-[calc(100vh-300px)] flex items-center justify-center overflow-hidden"
+        id="join-waitlist"
+      >
         {/* Content */}
         <div className="relative z-10 text-center px-6 max-w-2xl">
           {/* Joined Count */}
@@ -178,7 +312,7 @@ export default function JoinWaitlistPage() {
               />
             </div>
             <p className="text-sm md:text-md text-stone-300">
-              4,921 people joined waitlist
+              {waitlistCount} people joined waitlist
             </p>
           </div>
 
@@ -199,10 +333,24 @@ export default function JoinWaitlistPage() {
               type="email"
               placeholder="Enter your email to join the waitlist..."
               className="flex-1 px-4 py-2 text-sm text-gray-700 focus:outline-none rounded-full"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
 
-            <button className=" bg-indigo-500 text-white px-4 py-2 rounded-full text-sm hover:bg-indigo-600 font-semibold whitespace-nowrap">
-              Join Waitlist
+            <button
+              onClick={async () => {
+                await joinWaitlist(email);
+              }}
+              disabled={loading}
+              className={`relative bg-indigo-500 text-white px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap cursor-pointer
+    hover:bg-indigo-600 transition-all
+    disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
+            >
+              {loading && (
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              )}
+
+              {loading ? "Joining..." : "Join Waitlist"}
             </button>
           </div>
 
@@ -225,7 +373,7 @@ export default function JoinWaitlistPage() {
 
       <section className="relative w-full flex flex-col items-center justify-center pb-20 px-4">
         {/* Video Container */}
-        <div className="relative w-full max-w-6xl rounded-3xl overflow-hidden shadow-xl md:h-[400px] lg:h-[700px]">
+        <div className="relative w-full max-w-6xl rounded-3xl overflow-hidden shadow-xl h-[300px] md:h-[400px] lg:h-[600px]">
           {/* Play Button */}
           <button
             onClick={handlePlay}
@@ -235,42 +383,60 @@ export default function JoinWaitlistPage() {
           </button>
 
           {/* Thumbnail overlay */}
-          {!isPlaying && (
+          {/* {!isPlaying && (
             <img
               src="/images/image1.png"
               alt="Video Thumbnail"
               className="absolute inset-0 w-full h-full object-cover cursor-pointer z-10"
               onClick={handlePlay}
             />
-          )}
+          )} */}
 
           {/* Video */}
-          <video
+          {/* <video
             ref={videoRef}
-            src="/videos/safoai-video.mp4"
             className="w-full h-full object-cover"
-            controls={isPlaying} // controls appear only after play
+            controls={isPlaying}
             playsInline
-          />
+          >
+            <source src="/videos/safoai-video.mp4" type="video/mp4" />
+          </video> */}
+          <iframe
+            className="w-full h-full"
+            src="https://www.youtube.com/embed/Gn2KsL81n_0?si=laylEhr4AD1NaHZe"
+            title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          ></iframe>
         </div>
       </section>
 
       <section className="text-white py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <p className="text-xs tracking-widest text-gray-400 uppercase">
-            Explore the features of SafoAI
-          </p>
+        <div className="max-w-6xl mx-auto flex flex-wrap justify-between gap-4">
+          <div className="">
+            {/* Header */}
+            <p className="text-xs tracking-widest text-gray-400 uppercase">
+              Explore the features of SafoAI
+            </p>
 
-          <h2 className="text-4xl font-semibold mt-2">Features</h2>
+            <h2 className="text-4xl font-semibold mt-2">Features</h2>
 
-          <p className="text-gray-400 max-w-xl mt-2">
-            Explore SafoAI&apos;s core features, including AI-powered business
-            assistants, real-time market insights, automated idea validation,
-            full-stack project building, investor matching, and a comprehensive
-            learning hub — all designed to streamline workflows and drive
-            smarter decisions.
-          </p>
+            <p className="text-gray-400 max-w-xl mt-2">
+              Explore SafoAI&apos;s core features, including AI-powered business
+              assistants, real-time market insights, automated idea validation,
+              full-stack project building, investor matching, and a
+              comprehensive learning hub — all designed to streamline workflows
+              and drive smarter decisions.
+            </p>
+          </div>
+          <div>
+            <Link href={"#join-waitlist"}>
+              <button className="rounded-full bg-white hover:bg-white/80 text-black text-sm py-2 px-5 transition cursor-pointer">
+                Discover More
+              </button>
+            </Link>
+          </div>
         </div>
 
         <div className="max-w-6xl mx-auto mt-10">
@@ -329,6 +495,14 @@ export default function JoinWaitlistPage() {
           ))}
         </div>
       </section>
+
+      <Toast
+        open={toastState.open}
+        title={toastState.title}
+        message={toastState.message}
+        variant={toastState.variant}
+        onClose={closeToast}
+      />
 
       {/* Footer */}
       <Footer />
