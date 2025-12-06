@@ -225,7 +225,7 @@ export default function JoinWaitlistPage() {
 
       <section className="relative w-full flex flex-col items-center justify-center pb-20 px-4">
         {/* Video Container */}
-        <div className="relative w-full max-w-6xl rounded-3xl overflow-hidden shadow-xl">
+        <div className="relative w-full max-w-6xl rounded-3xl overflow-hidden shadow-xl md:h-[400px] lg:h-[700px]">
           {/* Play Button */}
           <button
             onClick={handlePlay}
@@ -248,7 +248,7 @@ export default function JoinWaitlistPage() {
           <video
             ref={videoRef}
             src="/videos/safoai-video.mp4"
-            className="w-full h-auto object-cover"
+            className="w-full h-full object-cover"
             controls={isPlaying} // controls appear only after play
             playsInline
           />
@@ -271,42 +271,22 @@ export default function JoinWaitlistPage() {
             learning hub — all designed to streamline workflows and drive
             smarter decisions.
           </p>
+        </div>
 
-          {/* Arrows */}
-          <div className="flex justify-end gap-3 mt-4">
-            <button
-              onClick={scrollLeft}
-              className="p-2 bg-[#1A1B1F] rounded-full hover:bg-[#222328] transition"
-            >
-              <ChevronLeft className="text-gray-300" size={20} />
-            </button>
-            <button
-              onClick={scrollRight}
-              className="p-2 bg-[#1A1B1F] rounded-full hover:bg-[#222328] transition"
-            >
-              <ChevronRight className="text-gray-300" size={20} />
-            </button>
-          </div>
-
-          {/* Scrollable Cards */}
-          <div
-            ref={scrollRef}
-            className="flex gap-4 mt-8 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide no-scrollbar"
-          >
-            {caseStudies.map((item, index) => (
+        <div className="max-w-6xl mx-auto mt-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {caseStudies.map((caseStudy, index) => (
               <div
                 key={index}
-                className="shrink-0 w-[80%] sm:w-[45%] md:w-[32%] lg:w-[24%] bg-black p-6 rounded-2xl border border-stone-800 snap-start"
+                className="p-6 bg-stone-300/10 backdrop-blur-xl rounded-lg border border-stone-700 hover:shadow-lg transition-shadow duration-200"
               >
-                <div className="flex items-center gap-2 mb-4 bg-indigo-600 w-fit p-2 rounded-full">
-                  {item.icon}
+                <div className="flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-md mb-4">
+                  {caseStudy.icon}
                 </div>
-
-                <h3 className="font-semibold text-lg mb-2 text-white">
-                  {item.subtitle}
+                <h3 className="text-xl font-semibold mb-2">
+                  {caseStudy.subtitle}
                 </h3>
-
-                <p className="text-gray-400 text-sm">{item.description}</p>
+                <p className="text-gray-400">{caseStudy.description}</p>
               </div>
             ))}
           </div>
