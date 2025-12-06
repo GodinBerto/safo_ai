@@ -247,7 +247,7 @@ export default function JoinWaitlistPage() {
           {/* Video */}
           <video
             ref={videoRef}
-            src="/videos/Safo AI YC  Video.mp4"
+            src="/videos/safoai-video.mp4"
             className="w-full h-auto object-cover"
             controls={isPlaying} // controls appear only after play
             playsInline

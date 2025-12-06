@@ -4,13 +4,13 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  //   // Allow home page
-  //   if (path === "/join-waitlist") {
-  //     return NextResponse.next();
-  //   }
+  // Allow home page
+  if (path === "/join-waitlist") {
+    return NextResponse.next();
+  }
 
-  //   // Redirect everything else back to home
-  //   return NextResponse.redirect(new URL("/join-waitlist", request.url));
+  // Redirect everything else back to home
+  return NextResponse.redirect(new URL("/join-waitlist", request.url));
 }
 
 // Apply middleware to all pages
