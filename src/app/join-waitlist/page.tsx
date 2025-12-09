@@ -4,7 +4,9 @@ import ColorBends from "@/components/ColorBends";
 import Footer from "@/components/footer";
 import LandingNavbar from "@/components/landingNavbar";
 import Toast from "@/components/ui/toast";
-import { em } from "framer-motion/client";
+import Confetti from "react-confetti";
+import { FaWhatsapp } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart2,
   BookOpen,
@@ -15,8 +17,11 @@ import {
   ChevronRight,
   ChevronUp,
   Code,
+  Facebook,
   Lightbulb,
+  Linkedin,
   Play,
+  Twitter,
   Users,
   X,
 } from "lucide-react";
@@ -127,22 +132,14 @@ export default function JoinWaitlistPage() {
   const [email, setEmail] = useState("");
   const [refresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showCongratsModal, setShowCongratsModal] = useState(false);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   const handlePlay = () => {
     if (videoRef.current) {
       videoRef.current.play();
       setIsPlaying(true);
     }
-  };
-
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scrollLeft = () => {
-    scrollRef.current?.scrollBy({ left: -380, behavior: "smooth" });
-  };
-
-  const scrollRight = () => {
-    scrollRef.current?.scrollBy({ left: 380, behavior: "smooth" });
   };
 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -238,6 +235,9 @@ export default function JoinWaitlistPage() {
       setEmail("");
       setRefresh(!refresh);
       setLoading(false);
+      await getWaitlistCount();
+      // ✅ Show modal
+      setShowCongratsModal(true);
     } catch (error) {
       console.error("Error joining waitlist:", error);
       showToast({
@@ -270,7 +270,18 @@ export default function JoinWaitlistPage() {
 
   useEffect(() => {
     getWaitlistCount();
-  }, [refresh]);
+  }, []);
+
+  useEffect(() => {
+    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div className="min-h-screen relative">
@@ -286,12 +297,20 @@ export default function JoinWaitlistPage() {
       <LandingNavbar />
 
       {/* Content */}
-      <section
+      <motion.section
         className="relative w-full min-h-screen md:min-h-[calc(100vh-300px)] flex items-center justify-center overflow-hidden"
         id="join-waitlist"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
       >
         {/* Content */}
-        <div className="relative z-10 text-center px-6 max-w-2xl">
+        <motion.div
+          className="relative z-10 text-center px-6 max-w-2xl"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+        >
           {/* Joined Count */}
           <div className="flex items-center justify-center gap-6 border-r border-stone-600/10 bg-stone-300/10 backdrop-blur-xl mb-4 w-fit mx-auto px-4 py-2 rounded-full">
             <div className="flex items-center">
@@ -328,7 +347,11 @@ export default function JoinWaitlistPage() {
           <p className="text-stone-300 mb-6">We are coming soon.</p>
 
           {/* Join waitlist */}
-          <div className="flex items-center gap-2 bg-white p-2 rounded-full shadow-md max-w-lg mx-auto mb-6 w-full">
+          <motion.div
+            className="flex items-center gap-2 bg-white p-2 rounded-full shadow-md max-w-lg mx-auto mb-6 w-full"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+          >
             <input
               type="email"
               placeholder="Enter your email to join the waitlist..."
@@ -352,7 +375,7 @@ export default function JoinWaitlistPage() {
 
               {loading ? "Joining..." : "Join Waitlist"}
             </button>
-          </div>
+          </motion.div>
 
           {/* Countdown */}
           {/* <div className="flex items-center justify-center gap-4 text-center">
@@ -368,10 +391,16 @@ export default function JoinWaitlistPage() {
               </div>
             ))}
           </div> */}
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
-      <section className="relative w-full flex flex-col items-center justify-center pb-20 px-4">
+      <motion.section
+        className="relative w-full flex flex-col items-center justify-center pb-20 px-4"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
         {/* Video Container */}
         <div className="relative w-full max-w-6xl rounded-3xl overflow-hidden shadow-xl h-[300px] md:h-[400px] lg:h-[600px]">
           {/* Play Button */}
@@ -410,9 +439,15 @@ export default function JoinWaitlistPage() {
             allowFullScreen
           ></iframe>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="text-white py-20 px-4">
+      <motion.section
+        className="text-white py-20 px-4"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="max-w-6xl mx-auto flex flex-wrap justify-between gap-4">
           <div className="">
             {/* Header */}
@@ -457,9 +492,15 @@ export default function JoinWaitlistPage() {
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="max-w-6xl mx-auto px-4 py-12 pb-44">
+      <motion.section
+        className="max-w-6xl mx-auto px-4 py-12 pb-44"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
         {/* Header */}
         <p className="text-xs tracking-widest text-gray-400 uppercase">FAQ</p>
 
@@ -494,7 +535,7 @@ export default function JoinWaitlistPage() {
             </div>
           ))}
         </div>
-      </section>
+      </motion.section>
 
       <Toast
         open={toastState.open}
@@ -503,6 +544,87 @@ export default function JoinWaitlistPage() {
         variant={toastState.variant}
         onClose={closeToast}
       />
+
+      {showCongratsModal && (
+        <>
+          {/* Confetti */}
+          <Confetti
+            width={windowSize.width}
+            height={windowSize.height}
+            numberOfPieces={300}
+          />
+
+          {/* Modal Overlay */}
+          <div className="fixed inset-0 z-40 flex items-center justify-center px-4 sm:px-0 bg-black/70">
+            <div className="bg-stone-300/10 backdrop-blur-xl border border-stone-700 rounded-xl shadow-xl p-4 sm:p-6 w-full max-w-xs sm:max-w-sm text-center relative">
+              {/* Close Button */}
+              <button
+                onClick={() => setShowCongratsModal(false)}
+                className="absolute top-2 right-2 text-gray-300 hover:text-white"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Icon & Title */}
+              <CheckCircle size={50} className="mx-auto text-green-500 mb-4" />
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">
+                Congratulations!
+              </h2>
+              <p className="mb-4 text-stone-400 text-sm sm:text-base">
+                You&apos;ve successfully joined the SafoAI waitlist!
+                <br />
+                <br />
+                Stay connected with us on social media to get the latest
+                updates, tips, and join our community. Click the icons below to
+                follow or join us on WhatsApp, Facebook, Twitter, and LinkedIn.
+              </p>
+
+              {/* Social Sharing */}
+              <div className="flex flex-wrap justify-center gap-3 mt-4">
+                {/* WhatsApp */}
+                <a
+                  href="https://whatsapp.com/channel/0029VbC0sUZHwXbAJp7nc20J"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-green-500 hover:bg-green-600 p-3 rounded-full text-white transition"
+                >
+                  <FaWhatsapp size={20} />
+                </a>
+
+                {/* Facebook */}
+                <a
+                  href="https://facebook.com/sharer/sharer.php?u=https://yourwebsite.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-600 hover:bg-blue-700 p-3 rounded-full text-white transition"
+                >
+                  <Facebook size={20} />
+                </a>
+
+                {/* Twitter */}
+                <a
+                  href="https://twitter.com/intent/tweet?url=https://yourwebsite.com&text=Join%20SafoAI%20Waitlist"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-400 hover:bg-blue-500 p-3 rounded-full text-white transition"
+                >
+                  <Twitter size={20} />
+                </a>
+
+                {/* LinkedIn */}
+                <a
+                  href="https://www.linkedin.com/sharing/share-offsite/?url=https://yourwebsite.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-700 hover:bg-blue-800 p-3 rounded-full text-white transition"
+                >
+                  <Linkedin size={20} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Footer */}
       <Footer />
